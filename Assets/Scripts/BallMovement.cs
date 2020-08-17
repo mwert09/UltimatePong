@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class BallMovement : MonoBehaviour
 {
+
+    public static BallMovement instance;
+
     private Rigidbody2D rb;
 
     public float startSpeed;
     public float currentSpeed;
     public float speedIncrease;
     public int whichWay = 1;
-    
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -38,11 +45,19 @@ public class BallMovement : MonoBehaviour
         }
         if (collision.gameObject.name == "LeftWall" || collision.gameObject.name == "RightWall")
         {
+            if(whichWay == -1)
+            {
+                UIController.instance.IncreasePlayer2Score();
+            }
+            else
+            {
+                UIController.instance.IncreasePlayer1Score();
+            }
             whichWay *= -1;
             currentSpeed = startSpeed;
 
             // wait 3 seconds before another round
-            transform.position = new Vector2(0f, 0f);
+            ResetBall();
 
             Vector2 dir = new Vector2(whichWay, 0f).normalized;
             rb.velocity = dir * currentSpeed;
@@ -53,6 +68,11 @@ public class BallMovement : MonoBehaviour
     float hitFactor(Vector2 ballPos, Vector2 racketPos, float racketHeight)
     {
         return (ballPos.y - racketPos.y) / racketHeight;
+    }
+
+    public void ResetBall()
+    {
+        transform.position = new Vector2(0f, 0f);
     }
 
     
